@@ -1,0 +1,266 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 56;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		A10000000000000000000001 /* DeskBoxApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10000000000000000000001 /* DeskBoxApp.swift */; };
+		A10000000000000000000002 /* DesktopZoneController.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10000000000000000000002 /* DesktopZoneController.swift */; };
+		A10000000000000000000003 /* ZoneView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10000000000000000000003 /* ZoneView.swift */; };
+		A10000000000000000000004 /* ZoneStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10000000000000000000005 /* ZoneStore.swift */; };
+		A10000000000000000000005 /* WindowDragHandle.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10000000000000000000006 /* WindowDragHandle.swift */; };
+		A10000000000000000000006 /* ZoneManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10000000000000000000007 /* ZoneManager.swift */; };
+		A10000000000000000000007 /* QuickLookController.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10000000000000000000008 /* QuickLookController.swift */; };
+		A10000000000000000000008 /* NativeFileDragSource.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10000000000000000000009 /* NativeFileDragSource.swift */; };
+		A10000000000000000000009 /* StatusBarController.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10000000000000000000010 /* StatusBarController.swift */; };
+		A10000000000000000000010 /* DesktopNote.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10000000000000000000011 /* DesktopNote.swift */; };
+		A10000000000000000000011 /* DesktopChecklist.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10000000000000000000012 /* DesktopChecklist.swift */; };
+		A10000000000000000000012 /* DesktopLauncher.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10000000000000000000013 /* DesktopLauncher.swift */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXFileReference section */
+		B10000000000000000000001 /* DeskBoxApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DeskBoxApp.swift; sourceTree = "<group>"; };
+		B10000000000000000000002 /* DesktopZoneController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DesktopZoneController.swift; sourceTree = "<group>"; };
+		B10000000000000000000003 /* ZoneView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ZoneView.swift; sourceTree = "<group>"; };
+		B10000000000000000000005 /* ZoneStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ZoneStore.swift; sourceTree = "<group>"; };
+		B10000000000000000000006 /* WindowDragHandle.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WindowDragHandle.swift; sourceTree = "<group>"; };
+		B10000000000000000000007 /* ZoneManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ZoneManager.swift; sourceTree = "<group>"; };
+		B10000000000000000000008 /* QuickLookController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = QuickLookController.swift; sourceTree = "<group>"; };
+		B10000000000000000000009 /* NativeFileDragSource.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NativeFileDragSource.swift; sourceTree = "<group>"; };
+		B10000000000000000000010 /* StatusBarController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StatusBarController.swift; sourceTree = "<group>"; };
+		B10000000000000000000011 /* DesktopNote.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DesktopNote.swift; sourceTree = "<group>"; };
+		B10000000000000000000012 /* DesktopChecklist.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DesktopChecklist.swift; sourceTree = "<group>"; };
+		B10000000000000000000013 /* DesktopLauncher.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DesktopLauncher.swift; sourceTree = "<group>"; };
+		B10000000000000000000004 /* DeskBox.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = DeskBox.app; sourceTree = BUILT_PRODUCTS_DIR; };
+/* End PBXFileReference section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		D10000000000000000000002 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		C10000000000000000000001 = {
+			isa = PBXGroup;
+			children = (
+				C10000000000000000000002 /* DeskBox */,
+				C10000000000000000000003 /* Products */,
+			);
+			sourceTree = "<group>";
+		};
+		C10000000000000000000002 /* DeskBox */ = {
+			isa = PBXGroup;
+			children = (
+				B10000000000000000000001 /* DeskBoxApp.swift */,
+				B10000000000000000000002 /* DesktopZoneController.swift */,
+				B10000000000000000000003 /* ZoneView.swift */,
+				B10000000000000000000005 /* ZoneStore.swift */,
+				B10000000000000000000006 /* WindowDragHandle.swift */,
+				B10000000000000000000007 /* ZoneManager.swift */,
+				B10000000000000000000008 /* QuickLookController.swift */,
+				B10000000000000000000009 /* NativeFileDragSource.swift */,
+				B10000000000000000000010 /* StatusBarController.swift */,
+				B10000000000000000000011 /* DesktopNote.swift */,
+				B10000000000000000000012 /* DesktopChecklist.swift */,
+				B10000000000000000000013 /* DesktopLauncher.swift */,
+			);
+			path = DeskBox;
+			sourceTree = "<group>";
+		};
+		C10000000000000000000003 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				B10000000000000000000004 /* DeskBox.app */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXNativeTarget section */
+		E10000000000000000000001 /* DeskBox */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = H10000000000000000000002 /* Build configuration list for PBXNativeTarget "DeskBox" */;
+			buildPhases = (
+				D10000000000000000000001 /* Sources */,
+				D10000000000000000000002 /* Frameworks */,
+				D10000000000000000000003 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = DeskBox;
+			productName = DeskBox;
+			productReference = B10000000000000000000004 /* DeskBox.app */;
+			productType = "com.apple.product-type.application";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		F10000000000000000000001 /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				BuildIndependentTargetsInParallel = 1;
+				LastSwiftUpdateCheck = 2700;
+				LastUpgradeCheck = 2700;
+				TargetAttributes = {
+					E10000000000000000000001 = {
+						CreatedOnToolsVersion = 27.0;
+					};
+				};
+			};
+			buildConfigurationList = H10000000000000000000001 /* Build configuration list for PBXProject "DeskBox" */;
+			compatibilityVersion = "Xcode 14.0";
+			developmentRegion = en;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				en,
+				Base,
+			);
+			mainGroup = C10000000000000000000001;
+			productRefGroup = C10000000000000000000003 /* Products */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				E10000000000000000000001 /* DeskBox */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXResourcesBuildPhase section */
+		D10000000000000000000003 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXResourcesBuildPhase section */
+
+/* Begin PBXSourcesBuildPhase section */
+		D10000000000000000000001 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				A10000000000000000000001 /* DeskBoxApp.swift in Sources */,
+				A10000000000000000000002 /* DesktopZoneController.swift in Sources */,
+				A10000000000000000000003 /* ZoneView.swift in Sources */,
+				A10000000000000000000004 /* ZoneStore.swift in Sources */,
+				A10000000000000000000005 /* WindowDragHandle.swift in Sources */,
+				A10000000000000000000006 /* ZoneManager.swift in Sources */,
+				A10000000000000000000007 /* QuickLookController.swift in Sources */,
+				A10000000000000000000008 /* NativeFileDragSource.swift in Sources */,
+				A10000000000000000000009 /* StatusBarController.swift in Sources */,
+				A10000000000000000000010 /* DesktopNote.swift in Sources */,
+				A10000000000000000000011 /* DesktopChecklist.swift in Sources */,
+				A10000000000000000000012 /* DesktopLauncher.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin XCBuildConfiguration section */
+		G10000000000000000000001 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_STYLE = Automatic;
+				COMBINE_HIDPI_IMAGES = YES;
+				ENABLE_APP_SANDBOX = NO;
+				ENABLE_HARDENED_RUNTIME = NO;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.utilities";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/../Frameworks",
+				);
+				MACOSX_DEPLOYMENT_TARGET = 14.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.deskbox.prototype;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = macosx;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "DEBUG $(inherited)";
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+				SWIFT_VERSION = 6.0;
+			};
+			name = Debug;
+		};
+		G10000000000000000000002 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_STYLE = Automatic;
+				COMBINE_HIDPI_IMAGES = YES;
+				ENABLE_APP_SANDBOX = NO;
+				ENABLE_HARDENED_RUNTIME = NO;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.utilities";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/../Frameworks",
+				);
+				MACOSX_DEPLOYMENT_TARGET = 14.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.deskbox.prototype;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = macosx;
+				SWIFT_COMPILATION_MODE = wholemodule;
+				SWIFT_VERSION = 6.0;
+			};
+			name = Release;
+		};
+		G10000000000000000000003 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				MACOSX_DEPLOYMENT_TARGET = 14.0;
+				ONLY_ACTIVE_ARCH = YES;
+				SDKROOT = macosx;
+			};
+			name = Debug;
+		};
+		G10000000000000000000004 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				MACOSX_DEPLOYMENT_TARGET = 14.0;
+				SDKROOT = macosx;
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		H10000000000000000000001 /* Build configuration list for PBXProject "DeskBox" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				G10000000000000000000003 /* Debug */,
+				G10000000000000000000004 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		H10000000000000000000002 /* Build configuration list for PBXNativeTarget "DeskBox" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				G10000000000000000000001 /* Debug */,
+				G10000000000000000000002 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+/* End XCConfigurationList section */
+	};
+	rootObject = F10000000000000000000001 /* Project object */;
+}
