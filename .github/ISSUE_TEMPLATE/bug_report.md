@@ -1,16 +1,34 @@
 ---
 name: Bug report
-about: Report a reproducible Desktop X issue
+about: Report a reproducible DeskBox issue
 title: '[Bug] '
 labels: bug
 ---
 
-**What happened?**
+## What happened?
 
-**Steps to reproduce**
+Describe the problem clearly.
 
-**Expected behavior**
+## Steps to reproduce
 
-**macOS / app version**
+1.
+2.
+3.
 
-**Screenshots (remove personal information)**
+## Expected behavior
+
+What should have happened?
+
+## Environment
+
+- DeskBox version:
+- macOS version:
+- Mac: Apple Silicon / Intel
+
+## Screenshots
+
+If helpful, attach screenshots after removing private file names and personal information.
+
+## File-safety note
+
+If the issue involves file movement, please state whether files were moved, duplicated, renamed, or missing. Do not upload private files.

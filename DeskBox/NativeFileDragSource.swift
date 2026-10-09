@@ -13,9 +13,9 @@ struct NativeFileDragSource: NSViewRepresentable {
     let onOpenURLs: ([URL]) -> Void
     let onRevealURLs: ([URL]) -> Void
     let onMoveToDesktopURLs: ([URL]) -> Void
-    let onDropURLs: ([URL]) -> Bool
-    let onHoverURLs: ([URL]) -> Void
-    let onTargeted: (Bool) -> Void
+    let onDropURLs: ([URL], Bool) -> Bool
+    let onHoverURLs: ([URL], Bool) -> Void
+    let onTargeted: (Bool, Bool) -> Void
     let onDragEnded: (Bool) -> Void
 
     func makeNSView(context: Context) -> DragSourceView {
@@ -59,9 +59,9 @@ struct NativeFileDragSource: NSViewRepresentable {
         var onOpenURLs: (([URL]) -> Void)?
         var onRevealURLs: (([URL]) -> Void)?
         var onMoveToDesktopURLs: (([URL]) -> Void)?
-        var onDropURLs: (([URL]) -> Bool)?
-        var onHoverURLs: (([URL]) -> Void)?
-        var onTargeted: ((Bool) -> Void)?
+        var onDropURLs: (([URL], Bool) -> Bool)?
+        var onHoverURLs: (([URL], Bool) -> Void)?
+        var onTargeted: ((Bool, Bool) -> Void)?
         var onDragEnded: ((Bool) -> Void)?
 
         private var mouseDownPoint: NSPoint?
@@ -130,7 +130,7 @@ struct NativeFileDragSource: NSViewRepresentable {
             if let start = mouseDownPoint {
                 let dx = current.x - start.x
                 let dy = current.y - start.y
-                if hypot(dx, dy) < 3 {
+                if hypot(dx, dy) < 5 {
                     return
                 }
             }
@@ -200,31 +200,67 @@ struct NativeFileDragSource: NSViewRepresentable {
         override func draggingEntered(_ sender: NSDraggingInfo) -> NSDragOperation {
             let urls = draggedFileURLs(from: sender)
             guard !urls.isEmpty else { return [] }
-            onTargeted?(true)
-            onHoverURLs?(urls)
+
+            if isDraggingCurrentItem(urls) {
+                onTargeted?(false, false)
+                return .move
+            }
+
+            let after = isAfterTarget(sender)
+            onTargeted?(true, after)
+            onHoverURLs?(urls, after)
             return .move
         }
 
         override func draggingUpdated(_ sender: NSDraggingInfo) -> NSDragOperation {
             let urls = draggedFileURLs(from: sender)
             guard !urls.isEmpty else { return [] }
-            onHoverURLs?(urls)
+
+            if isDraggingCurrentItem(urls) {
+                onTargeted?(false, false)
+                return .move
+            }
+
+            let after = isAfterTarget(sender)
+            onTargeted?(true, after)
+            onHoverURLs?(urls, after)
             return .move
         }
 
         override func draggingExited(_ sender: NSDraggingInfo?) {
-            onTargeted?(false)
+            onTargeted?(false, false)
         }
 
         override func performDragOperation(_ sender: NSDraggingInfo) -> Bool {
             let urls = draggedFileURLs(from: sender)
-            onTargeted?(false)
             guard !urls.isEmpty else { return false }
-            return onDropURLs?(urls) ?? false
+
+            if isDraggingCurrentItem(urls) {
+                onTargeted?(false, false)
+                return true
+            }
+
+            let after = isAfterTarget(sender)
+            onTargeted?(false, after)
+            return onDropURLs?(urls, after) ?? false
         }
 
         override func concludeDragOperation(_ sender: NSDraggingInfo?) {
-            onTargeted?(false)
+            onTargeted?(false, false)
+        }
+
+        private func isAfterTarget(_ sender: NSDraggingInfo) -> Bool {
+            let point = convert(sender.draggingLocation, from: nil)
+            return point.x >= bounds.midX
+        }
+
+        private func isDraggingCurrentItem(_ urls: [URL]) -> Bool {
+            guard let url else { return false }
+
+            let targetPath = url.standardizedFileURL.path
+            return urls.contains {
+                $0.standardizedFileURL.path == targetPath
+            }
         }
 
         override func menu(for event: NSEvent) -> NSMenu? {

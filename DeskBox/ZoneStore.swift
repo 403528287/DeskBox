@@ -11,6 +11,7 @@ final class ZoneStore: ObservableObject {
     @Published var contentOpacity: Double
     @Published var contentOffset: CGFloat
     @Published private(set) var files: [URL] = []
+    @Published private(set) var isDirectoryMissing = false
 
     private(set) var directoryURL: URL
 
@@ -22,7 +23,6 @@ final class ZoneStore: ObservableObject {
         self.contentOpacity = collapsed ? 0 : 1
         self.contentOffset = collapsed ? -6 : 0
         self.directoryURL = directoryURL
-        ensureDirectory()
         reload()
     }
 
@@ -37,7 +37,6 @@ final class ZoneStore: ObservableObject {
     func rename(to newName: String, directoryURL: URL) {
         name = newName
         self.directoryURL = directoryURL
-        ensureDirectory()
         reload()
     }
 
@@ -57,7 +56,18 @@ final class ZoneStore: ObservableObject {
     }
 
     private func currentDirectoryContents() -> [URL] {
-        ensureDirectory()
+        var isDirectory: ObjCBool = false
+        let exists = FileManager.default.fileExists(
+            atPath: directoryURL.path,
+            isDirectory: &isDirectory
+        )
+
+        guard exists, isDirectory.boolValue else {
+            isDirectoryMissing = true
+            return []
+        }
+
+        isDirectoryMissing = false
 
         let keys: [URLResourceKey] = [.isDirectoryKey, .nameKey]
         let urls = (try? FileManager.default.contentsOfDirectory(
@@ -97,10 +107,15 @@ final class ZoneStore: ObservableObject {
         return ordered
     }
 
-    func reorder(_ draggedURLs: [URL], before targetURL: URL) {
+    func reorder(
+        _ draggedURLs: [URL],
+        relativeTo targetURL: URL,
+        after: Bool
+    ) {
         guard let reordered = reorderedFiles(
             draggedURLs,
-            before: targetURL
+            relativeTo: targetURL,
+            after: after
         ) else {
             return
         }
@@ -109,15 +124,39 @@ final class ZoneStore: ObservableObject {
         saveOrder(reordered)
     }
 
-    func previewReorder(_ draggedURLs: [URL], before targetURL: URL) {
+    func previewReorder(
+        _ draggedURLs: [URL],
+        relativeTo targetURL: URL,
+        after: Bool
+    ) {
         guard let reordered = reorderedFiles(
             draggedURLs,
-            before: targetURL
+            relativeTo: targetURL,
+            after: after
         ), reordered != files else {
             return
         }
 
         files = reordered
+    }
+
+    func reorderToEnd(_ draggedURLs: [URL]) {
+        let draggedNames = Set(
+            draggedURLs.map(\.lastPathComponent)
+        )
+
+        let moving = files.filter {
+            draggedNames.contains($0.lastPathComponent)
+        }
+        guard !moving.isEmpty else { return }
+
+        let remaining = files.filter {
+            !draggedNames.contains($0.lastPathComponent)
+        }
+
+        let reordered = remaining + moving
+        files = reordered
+        saveOrder(reordered)
     }
 
     func commitCurrentOrder() {
@@ -130,10 +169,15 @@ final class ZoneStore: ObservableObject {
 
     private func reorderedFiles(
         _ draggedURLs: [URL],
-        before targetURL: URL
+        relativeTo targetURL: URL,
+        after: Bool
     ) -> [URL]? {
-        let draggedNames = Set(draggedURLs.map(\.lastPathComponent))
-        guard !draggedNames.contains(targetURL.lastPathComponent) else {
+        let draggedNames = Set(
+            draggedURLs.map(\.lastPathComponent)
+        )
+        guard !draggedNames.contains(
+            targetURL.lastPathComponent
+        ) else {
             return nil
         }
 
@@ -152,13 +196,26 @@ final class ZoneStore: ObservableObject {
             return nil
         }
 
-        remaining.insert(contentsOf: moving, at: targetIndex)
+        let insertionIndex = after
+            ? min(targetIndex + 1, remaining.count)
+            : targetIndex
+
+        remaining.insert(
+            contentsOf: moving,
+            at: insertionIndex
+        )
         return remaining
     }
 
-    func reorder(fileNames: [String], before targetURL: URL) {
+    func reorder(
+        fileNames: [String],
+        relativeTo targetURL: URL,
+        after: Bool
+    ) {
         let movingNames = Set(fileNames)
-        let moving = files.filter { movingNames.contains($0.lastPathComponent) }
+        let moving = files.filter {
+            movingNames.contains($0.lastPathComponent)
+        }
         guard !moving.isEmpty else { return }
 
         var remaining = files.filter {
@@ -171,7 +228,14 @@ final class ZoneStore: ObservableObject {
             return
         }
 
-        remaining.insert(contentsOf: moving, at: targetIndex)
+        let insertionIndex = after
+            ? min(targetIndex + 1, remaining.count)
+            : targetIndex
+
+        remaining.insert(
+            contentsOf: moving,
+            at: insertionIndex
+        )
         files = remaining
         saveOrder(remaining)
     }
@@ -187,7 +251,17 @@ final class ZoneStore: ObservableObject {
 
     @discardableResult
     func moveIntoZone(_ urls: [URL]) -> Bool {
-        ensureDirectory()
+        var isDirectory: ObjCBool = false
+        guard FileManager.default.fileExists(
+            atPath: directoryURL.path,
+            isDirectory: &isDirectory
+        ),
+        isDirectory.boolValue else {
+            isDirectoryMissing = true
+            return false
+        }
+
+        isDirectoryMissing = false
         var allSucceeded = true
 
         for source in urls {
@@ -277,17 +351,6 @@ final class ZoneStore: ObservableObject {
     func revealInFinder(_ urls: [URL]) {
         guard !urls.isEmpty else { return }
         NSWorkspace.shared.activateFileViewerSelecting(urls)
-    }
-
-    private func ensureDirectory() {
-        do {
-            try FileManager.default.createDirectory(
-                at: directoryURL,
-                withIntermediateDirectories: true
-            )
-        } catch {
-            NSLog("DeskBox create directory failed: \(error)")
-        }
     }
 
     static func uniqueDestination(in directory: URL, preferredName: String) -> URL {

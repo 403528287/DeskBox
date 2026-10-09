@@ -19,6 +19,9 @@
 		A10000000000000000000010 /* DesktopNote.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10000000000000000000011 /* DesktopNote.swift */; };
 		A10000000000000000000011 /* DesktopChecklist.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10000000000000000000012 /* DesktopChecklist.swift */; };
 		A10000000000000000000012 /* DesktopLauncher.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10000000000000000000013 /* DesktopLauncher.swift */; };
+		A10000000000000000000013 /* WorkspaceSwitcherPanel.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10000000000000000000014 /* WorkspaceSwitcherPanel.swift */; };
+		A10000000000000000000014 /* SettingsPanel.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10000000000000000000015 /* SettingsPanel.swift */; };
+		A10000000000000000000015 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = B10000000000000000000016 /* Assets.xcassets */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -34,6 +37,9 @@
 		B10000000000000000000011 /* DesktopNote.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DesktopNote.swift; sourceTree = "<group>"; };
 		B10000000000000000000012 /* DesktopChecklist.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DesktopChecklist.swift; sourceTree = "<group>"; };
 		B10000000000000000000013 /* DesktopLauncher.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DesktopLauncher.swift; sourceTree = "<group>"; };
+		B10000000000000000000014 /* WorkspaceSwitcherPanel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WorkspaceSwitcherPanel.swift; sourceTree = "<group>"; };
+		B10000000000000000000015 /* SettingsPanel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsPanel.swift; sourceTree = "<group>"; };
+		B10000000000000000000016 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		B10000000000000000000004 /* DeskBox.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = DeskBox.app; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
@@ -71,6 +77,9 @@
 				B10000000000000000000011 /* DesktopNote.swift */,
 				B10000000000000000000012 /* DesktopChecklist.swift */,
 				B10000000000000000000013 /* DesktopLauncher.swift */,
+				B10000000000000000000014 /* WorkspaceSwitcherPanel.swift */,
+				B10000000000000000000015 /* SettingsPanel.swift */,
+				B10000000000000000000016 /* Assets.xcassets */,
 			);
 			path = DeskBox;
 			sourceTree = "<group>";
@@ -141,6 +150,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				A10000000000000000000015 /* Assets.xcassets in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -163,6 +173,8 @@
 				A10000000000000000000010 /* DesktopNote.swift in Sources */,
 				A10000000000000000000011 /* DesktopChecklist.swift in Sources */,
 				A10000000000000000000012 /* DesktopLauncher.swift in Sources */,
+				A10000000000000000000013 /* WorkspaceSwitcherPanel.swift in Sources */,
+				A10000000000000000000014 /* SettingsPanel.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -172,6 +184,7 @@
 		G10000000000000000000001 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_STYLE = Automatic;
 				COMBINE_HIDPI_IMAGES = YES;
 				ENABLE_APP_SANDBOX = NO;
@@ -182,8 +195,10 @@
 					"$(inherited)",
 					"@executable_path/../Frameworks",
 				);
+				CURRENT_PROJECT_VERSION = 1;
 				MACOSX_DEPLOYMENT_TARGET = 14.0;
-				PRODUCT_BUNDLE_IDENTIFIER = com.deskbox.prototype;
+				MARKETING_VERSION = 0.1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.wfb.deskbox;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SDKROOT = macosx;
 				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "DEBUG $(inherited)";
@@ -195,6 +210,7 @@
 		G10000000000000000000002 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_STYLE = Automatic;
 				COMBINE_HIDPI_IMAGES = YES;
 				ENABLE_APP_SANDBOX = NO;
@@ -205,8 +221,10 @@
 					"$(inherited)",
 					"@executable_path/../Frameworks",
 				);
+				CURRENT_PROJECT_VERSION = 1;
 				MACOSX_DEPLOYMENT_TARGET = 14.0;
-				PRODUCT_BUNDLE_IDENTIFIER = com.deskbox.prototype;
+				MARKETING_VERSION = 0.1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.wfb.deskbox;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SDKROOT = macosx;
 				SWIFT_COMPILATION_MODE = wholemodule;

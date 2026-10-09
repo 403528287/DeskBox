@@ -211,6 +211,15 @@ struct NoteView: View {
                             )
                         }
 
+                    if workspaceState.isCurrentLayoutLocked {
+                        Image(systemName: "lock.fill")
+                            .font(.system(size: 9, weight: .semibold))
+                            .foregroundStyle(
+                                store.theme.headerForeground.opacity(0.72)
+                            )
+                            .help("当前工作区布局已锁定")
+                    }
+
                     Spacer(minLength: 12)
 
                     Button(action: onTogglePin) {
@@ -222,12 +231,15 @@ struct NoteView: View {
                         .font(.system(size: 11, weight: .semibold))
                         .foregroundStyle(store.theme.headerForeground)
                         .rotationEffect(.degrees(store.isPinned ? 0 : -20))
+                        .frame(width: 26, height: 26)
+                        .contentShape(Rectangle())
+                        .deskBoxHeaderHover()
                     }
                     .buttonStyle(.plain)
                     .help(store.isPinned ? "取消置顶" : "置顶便签")
 
                     Menu {
-                        Section("便签颜色") {
+                        Section("外观颜色") {
                             ForEach(
                                 NoteTheme.allCases,
                                 id: \.rawValue
@@ -262,6 +274,7 @@ struct NoteView: View {
                         ) {
                             onCollapse(!store.visualCollapsed)
                         }
+                        .disabled(workspaceState.isCurrentLayoutLocked)
 
                         if workspaceState.workspaces.count > 1 {
                             Menu("移动到工作区") {
@@ -289,6 +302,9 @@ struct NoteView: View {
                         Image(systemName: "ellipsis")
                             .font(.system(size: 12, weight: .semibold))
                             .foregroundStyle(store.theme.headerForeground)
+                            .frame(width: 26, height: 26)
+                            .contentShape(Rectangle())
+                            .deskBoxHeaderHover()
                     }
                     .menuStyle(.borderlessButton)
                     .fixedSize()
@@ -300,6 +316,9 @@ struct NoteView: View {
                         Image(systemName: "chevron.up")
                             .font(.system(size: 11, weight: .semibold))
                             .foregroundStyle(store.theme.headerForeground)
+                            .frame(width: 26, height: 26)
+                            .contentShape(Rectangle())
+                            .deskBoxHeaderHover()
                             .rotationEffect(
                                 .degrees(store.visualCollapsed ? 180 : 0)
                             )
@@ -309,7 +328,13 @@ struct NoteView: View {
                             )
                     }
                     .buttonStyle(.plain)
-                    .help(store.visualCollapsed ? "展开便签" : "折叠便签")
+                    .disabled(workspaceState.isCurrentLayoutLocked)
+                    .opacity(workspaceState.isCurrentLayoutLocked ? 0.42 : 1)
+                    .help(
+                        workspaceState.isCurrentLayoutLocked
+                            ? "布局已锁定"
+                            : (store.visualCollapsed ? "展开便签" : "折叠便签")
+                    )
                 }
                 .padding(.horizontal, 14)
             }
@@ -341,6 +366,20 @@ struct NoteView: View {
                                 store.theme
                             )
                         }
+
+                    if store.text.isEmpty {
+                        Text("写点什么…")
+                            .font(.system(size: 13))
+                            .foregroundStyle(Color.black.opacity(0.28))
+                            .frame(
+                                maxWidth: .infinity,
+                                maxHeight: .infinity,
+                                alignment: .topLeading
+                            )
+                            .padding(.horizontal, 14)
+                            .padding(.top, 15)
+                            .allowsHitTesting(false)
+                    }
                 }
             }
             .opacity(store.contentOpacity)
@@ -506,6 +545,17 @@ final class DesktopNoteController: NSObject, NSWindowDelegate {
         panel?.orderOut(nil)
     }
 
+    func setLayoutLocked(_ locked: Bool) {
+        guard let panel else { return }
+        panel.layoutLocked = locked
+
+        if locked {
+            panel.styleMask.remove(.resizable)
+        } else {
+            panel.styleMask.insert(.resizable)
+        }
+    }
+
     func close() {
         panel?.orderOut(nil)
         panel?.close()
@@ -532,7 +582,8 @@ final class DesktopNoteController: NSObject, NSWindowDelegate {
     }
 
     private func setCollapsed(_ collapsed: Bool) {
-        guard let panel,
+        guard manager?.isCurrentWorkspaceLayoutLocked != true,
+              let panel,
               let config = manager?.noteConfig(for: noteID),
               !isAnimatingCollapse,
               collapsed != store.visualCollapsed else {
@@ -657,6 +708,10 @@ final class DesktopNoteController: NSObject, NSWindowDelegate {
         _ sender: NSWindow,
         to frameSize: NSSize
     ) -> NSSize {
+        if manager?.isCurrentWorkspaceLayoutLocked == true {
+            return sender.frame.size
+        }
+
         guard store.visualCollapsed,
               !isAnimatingCollapse else {
             return frameSize

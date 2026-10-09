@@ -120,6 +120,7 @@ struct ChecklistView: View {
     @ObservedObject var store: ChecklistStore
     @ObservedObject var workspaceState: WorkspaceState
     @State private var draftText = ""
+    @State private var hoveredItemID: UUID?
 
     let onUpdate: (String, [ChecklistItem], NoteTheme) -> Void
     let onCollapse: (Bool) -> Void
@@ -140,13 +141,43 @@ struct ChecklistView: View {
 
                     VStack(spacing: 8) {
                         ScrollView {
-                            LazyVStack(spacing: 4) {
-                                ForEach(store.items) { item in
-                                    checklistRow(item)
+                            if store.items.isEmpty {
+                                VStack(spacing: 8) {
+                                    ZStack {
+                                        Circle()
+                                            .fill(Color.white.opacity(0.34))
+                                            .frame(width: 42, height: 42)
+
+                                        Image(systemName: "checkmark.circle")
+                                            .font(.system(size: 20, weight: .medium))
+                                            .foregroundStyle(
+                                                Color.black.opacity(0.34)
+                                            )
+                                    }
+
+                                    Text("还没有待办")
+                                        .font(.system(size: 12.5, weight: .semibold))
+                                        .foregroundStyle(
+                                            Color.black.opacity(0.58)
+                                        )
+
+                                    Text("在下方输入一项开始")
+                                        .font(.system(size: 10.5))
+                                        .foregroundStyle(
+                                            Color.black.opacity(0.38)
+                                        )
                                 }
+                                .frame(maxWidth: .infinity)
+                                .padding(.top, 28)
+                            } else {
+                                LazyVStack(spacing: 4) {
+                                    ForEach(store.items) { item in
+                                        checklistRow(item)
+                                    }
+                                }
+                                .padding(.horizontal, 10)
+                                .padding(.top, 10)
                             }
-                            .padding(.horizontal, 10)
-                            .padding(.top, 10)
                         }
 
                         addRow
@@ -212,6 +243,15 @@ struct ChecklistView: View {
                         )
                 }
 
+                if workspaceState.isCurrentLayoutLocked {
+                    Image(systemName: "lock.fill")
+                        .font(.system(size: 9, weight: .semibold))
+                        .foregroundStyle(
+                            store.theme.headerForeground.opacity(0.72)
+                        )
+                        .help("当前工作区布局已锁定")
+                }
+
                 Spacer(minLength: 8)
 
                 Button(action: onTogglePin) {
@@ -223,12 +263,15 @@ struct ChecklistView: View {
                     .font(.system(size: 11, weight: .semibold))
                     .foregroundStyle(store.theme.headerForeground)
                     .rotationEffect(.degrees(store.isPinned ? 0 : -20))
+                    .frame(width: 26, height: 26)
+                    .contentShape(Rectangle())
+                    .deskBoxHeaderHover()
                 }
                 .buttonStyle(.plain)
                 .help(store.isPinned ? "取消置顶" : "置顶清单")
 
                 Menu {
-                    Section("清单颜色") {
+                    Section("外观颜色") {
                         ForEach(NoteTheme.allCases, id: \.rawValue) { theme in
                             Button {
                                 store.theme = theme
@@ -256,6 +299,7 @@ struct ChecklistView: View {
                     ) {
                         onCollapse(!store.visualCollapsed)
                     }
+                    .disabled(workspaceState.isCurrentLayoutLocked)
 
                     if workspaceState.workspaces.count > 1 {
                         Menu("移动到工作区") {
@@ -280,6 +324,9 @@ struct ChecklistView: View {
                     Image(systemName: "ellipsis")
                         .font(.system(size: 12, weight: .semibold))
                         .foregroundStyle(store.theme.headerForeground)
+                        .frame(width: 26, height: 26)
+                        .contentShape(Rectangle())
+                        .deskBoxHeaderHover()
                 }
                 .menuStyle(.borderlessButton)
                 .fixedSize()
@@ -291,6 +338,9 @@ struct ChecklistView: View {
                     Image(systemName: "chevron.up")
                         .font(.system(size: 11, weight: .semibold))
                         .foregroundStyle(store.theme.headerForeground)
+                        .frame(width: 26, height: 26)
+                        .contentShape(Rectangle())
+                        .deskBoxHeaderHover()
                         .rotationEffect(
                             .degrees(store.visualCollapsed ? 180 : 0)
                         )
@@ -300,7 +350,13 @@ struct ChecklistView: View {
                         )
                 }
                 .buttonStyle(.plain)
-                .help(store.visualCollapsed ? "展开清单" : "折叠清单")
+                .disabled(workspaceState.isCurrentLayoutLocked)
+                .opacity(workspaceState.isCurrentLayoutLocked ? 0.42 : 1)
+                .help(
+                    workspaceState.isCurrentLayoutLocked
+                        ? "布局已锁定"
+                        : (store.visualCollapsed ? "展开清单" : "折叠清单")
+                )
             }
             .padding(.horizontal, 14)
         }
@@ -369,8 +425,26 @@ struct ChecklistView: View {
                 cornerRadius: 9,
                 style: .continuous
             )
-            .fill(Color.white.opacity(item.isDone ? 0.22 : 0.40))
+            .fill(
+                Color.white.opacity(
+                    hoveredItemID == item.id
+                        ? (item.isDone ? 0.32 : 0.52)
+                        : (item.isDone ? 0.22 : 0.40)
+                )
+            )
         )
+        .scaleEffect(hoveredItemID == item.id ? 1.006 : 1)
+        .animation(
+            .easeOut(duration: 0.12),
+            value: hoveredItemID
+        )
+        .onHover { hovering in
+            if hovering {
+                hoveredItemID = item.id
+            } else if hoveredItemID == item.id {
+                hoveredItemID = nil
+            }
+        }
     }
 
     private var addRow: some View {
@@ -551,6 +625,17 @@ final class DesktopChecklistController: NSObject, NSWindowDelegate {
         panel?.orderOut(nil)
     }
 
+    func setLayoutLocked(_ locked: Bool) {
+        guard let panel else { return }
+        panel.layoutLocked = locked
+
+        if locked {
+            panel.styleMask.remove(.resizable)
+        } else {
+            panel.styleMask.insert(.resizable)
+        }
+    }
+
     func close() {
         panel?.orderOut(nil)
         panel?.close()
@@ -580,7 +665,8 @@ final class DesktopChecklistController: NSObject, NSWindowDelegate {
     }
 
     private func setCollapsed(_ collapsed: Bool) {
-        guard let panel,
+        guard manager?.isCurrentWorkspaceLayoutLocked != true,
+              let panel,
               let config = manager?.checklistConfig(for: checklistID),
               !isAnimatingCollapse,
               collapsed != store.visualCollapsed else {
@@ -705,6 +791,10 @@ final class DesktopChecklistController: NSObject, NSWindowDelegate {
         _ sender: NSWindow,
         to frameSize: NSSize
     ) -> NSSize {
+        if manager?.isCurrentWorkspaceLayoutLocked == true {
+            return sender.frame.size
+        }
+
         guard store.visualCollapsed,
               !isAnimatingCollapse else {
             return frameSize

@@ -5,11 +5,24 @@ import QuartzCore
 @MainActor
 final class DeskBoxPanel: NSPanel {
     var onBackgroundMouseDown: (() -> Void)?
+    var onUndoFileMove: (() -> Void)?
+    var layoutLocked = false
 
     override var canBecomeKey: Bool { true }
     override var canBecomeMain: Bool { true }
 
     override func sendEvent(_ event: NSEvent) {
+        if event.type == .keyDown,
+           event.modifierFlags.contains(.command),
+           !event.modifierFlags.contains(.shift),
+           !event.modifierFlags.contains(.option),
+           !event.modifierFlags.contains(.control),
+           event.charactersIgnoringModifiers?.lowercased() == "z",
+           let onUndoFileMove {
+            onUndoFileMove()
+            return
+        }
+
         if event.type == .leftMouseDown,
            let contentView {
             let point = contentView.convert(
@@ -173,6 +186,9 @@ final class DesktopZoneController: NSObject, NSWindowDelegate {
         panel.onBackgroundMouseDown = { [weak manager] in
             manager?.selectionState.clear()
         }
+        panel.onUndoFileMove = { [weak manager] in
+            manager?.undoLastFileMove()
+        }
         panel.minSize = NSSize(
             width: 280,
             height: config.collapsed ? Self.collapsedHeight : 150
@@ -227,6 +243,9 @@ final class DesktopZoneController: NSObject, NSWindowDelegate {
             onDropURLs: { [weak self] urls in
                 guard let self else { return }
                 self.manager?.moveFiles(urls, to: self.zoneID)
+            },
+            onMoveToDesktopURLs: { [weak self] urls in
+                self?.manager?.moveFilesToDesktop(urls)
             }
         )
 
@@ -254,6 +273,21 @@ final class DesktopZoneController: NSObject, NSWindowDelegate {
         panel?.orderOut(nil)
     }
 
+    func focusAfterFileOperation() {
+        panel?.makeKey()
+    }
+
+    func setLayoutLocked(_ locked: Bool) {
+        guard let panel else { return }
+        panel.layoutLocked = locked
+
+        if locked {
+            panel.styleMask.remove(.resizable)
+        } else {
+            panel.styleMask.insert(.resizable)
+        }
+    }
+
     func close() {
         panel?.orderOut(nil)
         panel?.close()
@@ -262,7 +296,8 @@ final class DesktopZoneController: NSObject, NSWindowDelegate {
     }
 
     private func setCollapsed(_ collapsed: Bool) {
-        guard let panel,
+        guard manager?.isCurrentWorkspaceLayoutLocked != true,
+              let panel,
               let config = manager?.config(for: zoneID),
               !isAnimatingCollapse,
               collapsed != store.visualCollapsed else {
@@ -380,6 +415,10 @@ final class DesktopZoneController: NSObject, NSWindowDelegate {
         _ sender: NSWindow,
         to frameSize: NSSize
     ) -> NSSize {
+        if manager?.isCurrentWorkspaceLayoutLocked == true {
+            return sender.frame.size
+        }
+
         guard store.visualCollapsed,
               !isAnimatingCollapse else {
             return frameSize

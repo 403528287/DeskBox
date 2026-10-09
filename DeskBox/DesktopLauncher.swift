@@ -117,6 +117,17 @@ final class LauncherStore: ObservableObject {
         items.removeAll(where: { $0.id == id })
     }
 
+    func isUnavailable(_ item: LauncherItem) -> Bool {
+        switch item.kind {
+        case .website:
+            return false
+        case .file:
+            return !FileManager.default.fileExists(
+                atPath: item.target
+            )
+        }
+    }
+
     func open(_ item: LauncherItem) {
         switch item.kind {
         case .website:
@@ -156,6 +167,7 @@ final class LauncherStore: ObservableObject {
 struct LauncherView: View {
     @ObservedObject var store: LauncherStore
     @ObservedObject var workspaceState: WorkspaceState
+    @State private var hoveredItemID: UUID?
 
     let onUpdate: (String, [LauncherItem], NoteTheme) -> Void
     let onCollapse: (Bool) -> Void
@@ -176,13 +188,23 @@ struct LauncherView: View {
 
                     if store.items.isEmpty {
                         VStack(spacing: 8) {
-                            Image(systemName: "arrow.up.forward.app")
-                                .font(.system(size: 28))
-                                .foregroundStyle(Color.black.opacity(0.34))
+                            ZStack {
+                                Circle()
+                                    .fill(Color.white.opacity(0.34))
+                                    .frame(width: 44, height: 44)
 
-                            Text("添加常用网站、文件夹或应用")
-                                .font(.system(size: 12))
-                                .foregroundStyle(Color.black.opacity(0.55))
+                                Image(systemName: "arrow.up.forward.app")
+                                    .font(.system(size: 20, weight: .medium))
+                                    .foregroundStyle(Color.black.opacity(0.34))
+                            }
+
+                            Text("还没有快捷入口")
+                                .font(.system(size: 12.5, weight: .semibold))
+                                .foregroundStyle(Color.black.opacity(0.58))
+
+                            Text("点击右上角 + 添加网站、文件夹或应用")
+                                .font(.system(size: 10.5))
+                                .foregroundStyle(Color.black.opacity(0.38))
                         }
                         .frame(maxWidth: .infinity, maxHeight: .infinity)
                     } else {
@@ -248,6 +270,15 @@ struct LauncherView: View {
                         persist()
                     }
 
+                if workspaceState.isCurrentLayoutLocked {
+                    Image(systemName: "lock.fill")
+                        .font(.system(size: 9, weight: .semibold))
+                        .foregroundStyle(
+                            store.theme.headerForeground.opacity(0.72)
+                        )
+                        .help("当前工作区布局已锁定")
+                }
+
                 Spacer(minLength: 8)
 
                 Menu {
@@ -268,6 +299,9 @@ struct LauncherView: View {
                     Image(systemName: "plus")
                         .font(.system(size: 11, weight: .bold))
                         .foregroundStyle(store.theme.headerForeground)
+                        .frame(width: 26, height: 26)
+                        .contentShape(Rectangle())
+                        .deskBoxHeaderHover()
                 }
                 .menuStyle(.borderlessButton)
                 .fixedSize()
@@ -282,12 +316,15 @@ struct LauncherView: View {
                     .font(.system(size: 11, weight: .semibold))
                     .foregroundStyle(store.theme.headerForeground)
                     .rotationEffect(.degrees(store.isPinned ? 0 : -20))
+                    .frame(width: 26, height: 26)
+                    .contentShape(Rectangle())
+                    .deskBoxHeaderHover()
                 }
                 .buttonStyle(.plain)
                 .help(store.isPinned ? "取消置顶" : "置顶快捷入口")
 
                 Menu {
-                    Section("颜色") {
+                    Section("外观颜色") {
                         ForEach(NoteTheme.allCases, id: \.rawValue) { theme in
                             Button {
                                 store.theme = theme
@@ -315,6 +352,7 @@ struct LauncherView: View {
                     ) {
                         onCollapse(!store.visualCollapsed)
                     }
+                    .disabled(workspaceState.isCurrentLayoutLocked)
 
                     if workspaceState.workspaces.count > 1 {
                         Menu("移动到工作区") {
@@ -339,6 +377,9 @@ struct LauncherView: View {
                     Image(systemName: "ellipsis")
                         .font(.system(size: 12, weight: .semibold))
                         .foregroundStyle(store.theme.headerForeground)
+                        .frame(width: 26, height: 26)
+                        .contentShape(Rectangle())
+                        .deskBoxHeaderHover()
                 }
                 .menuStyle(.borderlessButton)
                 .fixedSize()
@@ -350,6 +391,9 @@ struct LauncherView: View {
                     Image(systemName: "chevron.up")
                         .font(.system(size: 11, weight: .semibold))
                         .foregroundStyle(store.theme.headerForeground)
+                        .frame(width: 26, height: 26)
+                        .contentShape(Rectangle())
+                        .deskBoxHeaderHover()
                         .rotationEffect(
                             .degrees(store.visualCollapsed ? 180 : 0)
                         )
@@ -359,7 +403,13 @@ struct LauncherView: View {
                         )
                 }
                 .buttonStyle(.plain)
-                .help(store.visualCollapsed ? "展开" : "折叠")
+                .disabled(workspaceState.isCurrentLayoutLocked)
+                .opacity(workspaceState.isCurrentLayoutLocked ? 0.42 : 1)
+                .help(
+                    workspaceState.isCurrentLayoutLocked
+                        ? "布局已锁定"
+                        : (store.visualCollapsed ? "展开" : "折叠")
+                )
             }
             .padding(.horizontal, 14)
         }
@@ -373,7 +423,9 @@ struct LauncherView: View {
     }
 
     private func launcherTile(_ item: LauncherItem) -> some View {
-        Button {
+        let unavailable = store.isUnavailable(item)
+
+        return Button {
             store.open(item)
         } label: {
             VStack(spacing: 6) {
@@ -384,10 +436,27 @@ struct LauncherView: View {
 
                 Text(item.title)
                     .font(.system(size: 11))
-                    .foregroundStyle(Color.black.opacity(0.78))
+                    .foregroundStyle(
+                        Color.black.opacity(
+                            unavailable ? 0.46 : 0.78
+                        )
+                    )
                     .lineLimit(2)
                     .multilineTextAlignment(.center)
                     .truncationMode(.middle)
+
+                if unavailable {
+                    Text("已失效")
+                        .font(
+                            .system(
+                                size: 9,
+                                weight: .semibold
+                            )
+                        )
+                        .foregroundStyle(
+                            Color.orange.opacity(0.82)
+                        )
+                }
             }
             .frame(maxWidth: .infinity)
             .padding(.vertical, 9)
@@ -397,21 +466,44 @@ struct LauncherView: View {
                     cornerRadius: 11,
                     style: .continuous
                 )
-                .fill(Color.white.opacity(0.36))
+                .fill(
+                    Color.white.opacity(
+                        hoveredItemID == item.id ? 0.52 : 0.36
+                    )
+                )
+            )
+            .scaleEffect(hoveredItemID == item.id ? 1.015 : 1)
+            .animation(
+                .easeOut(duration: 0.12),
+                value: hoveredItemID
             )
         }
         .buttonStyle(.plain)
+        .onHover { hovering in
+            if hovering {
+                hoveredItemID = item.id
+            } else if hoveredItemID == item.id {
+                hoveredItemID = nil
+            }
+        }
         .contextMenu {
             Button("打开") {
                 store.open(item)
             }
+            .disabled(unavailable)
 
-            Button("删除入口", role: .destructive) {
+            Divider()
+
+            Button("移除快捷入口", role: .destructive) {
                 store.remove(item.id)
                 persist()
             }
         }
-        .help(item.target)
+        .help(
+            unavailable
+                ? "原文件、文件夹或应用已不存在：\(item.target)"
+                : item.target
+        )
     }
 
     private func addWebsite() {
@@ -634,6 +726,17 @@ final class DesktopLauncherController: NSObject, NSWindowDelegate {
         panel?.orderOut(nil)
     }
 
+    func setLayoutLocked(_ locked: Bool) {
+        guard let panel else { return }
+        panel.layoutLocked = locked
+
+        if locked {
+            panel.styleMask.remove(.resizable)
+        } else {
+            panel.styleMask.insert(.resizable)
+        }
+    }
+
     func close() {
         panel?.orderOut(nil)
         panel?.close()
@@ -663,7 +766,8 @@ final class DesktopLauncherController: NSObject, NSWindowDelegate {
     }
 
     private func setCollapsed(_ collapsed: Bool) {
-        guard let panel,
+        guard manager?.isCurrentWorkspaceLayoutLocked != true,
+              let panel,
               let config = manager?.launcherConfig(for: launcherID),
               !isAnimatingCollapse,
               collapsed != store.visualCollapsed else {
@@ -788,6 +892,10 @@ final class DesktopLauncherController: NSObject, NSWindowDelegate {
         _ sender: NSWindow,
         to frameSize: NSSize
     ) -> NSSize {
+        if manager?.isCurrentWorkspaceLayoutLocked == true {
+            return sender.frame.size
+        }
+
         guard store.visualCollapsed,
               !isAnimatingCollapse else {
             return frameSize

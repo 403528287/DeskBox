@@ -4,11 +4,22 @@ Describe the change and why it is useful.
 
 ## Testing
 
-- [ ] Built successfully in Xcode
-- [ ] Tested desktop zones, drag/drop, and notes
-- [ ] No secrets or personal files included
+- [ ] Debug build succeeds
+- [ ] File-zone drag/drop still works
+- [ ] In-zone ordering still works
+- [ ] Multi-selection still works
+- [ ] `⌘Z` file-move undo still works
+- [ ] Workspaces still switch correctly
+- [ ] Notes / checklists / launchers still work
+- [ ] No secrets, personal files, or build artifacts are included
 
-## Screenshots (for UI changes)
+## Screenshots
+
+For UI changes, attach screenshots with private file names and personal information removed.
+
+## File-safety impact
+
+Describe any changes to real file movement, deletion, rename, storage, backup, or recovery behavior.
 
 ## Related issue
 

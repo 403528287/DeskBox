@@ -5,15 +5,25 @@ import ServiceManagement
 final class StatusBarController: NSObject {
     private let manager: ZoneManager
     private let statusItem: NSStatusItem
+    private var workspacePanelController: WorkspaceSwitcherPanelController?
+    private var settingsPanelController: SettingsPanelController?
 
     private let visibilityItem = NSMenuItem()
     private let workspaceItem = NSMenuItem()
+    private let undoMoveItem = NSMenuItem()
     private let launchAtLoginItem = NSMenuItem()
 
     init(manager: ZoneManager) {
         self.manager = manager
         self.statusItem = NSStatusBar.system.statusItem(withLength: NSStatusItem.squareLength)
         super.init()
+
+        workspacePanelController = WorkspaceSwitcherPanelController(
+            manager: manager
+        )
+        settingsPanelController = SettingsPanelController(
+            manager: manager
+        )
 
         configureStatusItem()
         configureMenu()
@@ -32,6 +42,16 @@ final class StatusBarController: NSObject {
 
     private func configureMenu() {
         let menu = NSMenu()
+
+        let workspacePanelItem = NSMenuItem(
+            title: "打开工作区面板",
+            action: #selector(toggleWorkspacePanel),
+            keyEquivalent: ""
+        )
+        workspacePanelItem.target = self
+        menu.addItem(workspacePanelItem)
+
+        menu.addItem(.separator())
 
         visibilityItem.target = self
         visibilityItem.action = #selector(toggleVisibility)
@@ -89,9 +109,36 @@ final class StatusBarController: NSObject {
 
         menu.addItem(.separator())
 
+        undoMoveItem.target = self
+        undoMoveItem.action = #selector(undoLastFileMove)
+        undoMoveItem.keyEquivalent = "z"
+        undoMoveItem.keyEquivalentModifierMask = [.command]
+        menu.addItem(undoMoveItem)
+
+        menu.addItem(.separator())
+
         launchAtLoginItem.target = self
         launchAtLoginItem.action = #selector(toggleLaunchAtLogin)
         menu.addItem(launchAtLoginItem)
+
+        menu.addItem(.separator())
+
+        let settingsItem = NSMenuItem(
+            title: "设置…",
+            action: #selector(openSettings),
+            keyEquivalent: ","
+        )
+        settingsItem.keyEquivalentModifierMask = [.command]
+        settingsItem.target = self
+        menu.addItem(settingsItem)
+
+        let aboutItem = NSMenuItem(
+            title: "关于 DeskBox",
+            action: #selector(openAbout),
+            keyEquivalent: ""
+        )
+        aboutItem.target = self
+        menu.addItem(aboutItem)
 
         menu.addItem(.separator())
 
@@ -119,6 +166,9 @@ final class StatusBarController: NSObject {
 
         statusItem.button?.toolTip =
             "DeskBox · \(manager.currentWorkspaceName)"
+
+        undoMoveItem.title = manager.undoFileMoveMenuTitle
+        undoMoveItem.isEnabled = manager.canUndoLastFileMove
 
         let status = SMAppService.mainApp.status
         launchAtLoginItem.title = "开机自动启动"
@@ -162,6 +212,41 @@ final class StatusBarController: NSObject {
         renameItem.target = self
         submenu.addItem(renameItem)
 
+        submenu.addItem(.separator())
+
+        let lockItem = NSMenuItem(
+            title: manager.isCurrentWorkspaceLayoutLocked
+                ? "解锁当前布局"
+                : "锁定当前布局",
+            action: #selector(toggleCurrentLayoutLock),
+            keyEquivalent: ""
+        )
+        lockItem.target = self
+        lockItem.state = manager.isCurrentWorkspaceLayoutLocked
+            ? .on
+            : .off
+        submenu.addItem(lockItem)
+
+        let saveLayoutItem = NSMenuItem(
+            title: "保存当前布局",
+            action: #selector(saveCurrentLayout),
+            keyEquivalent: ""
+        )
+        saveLayoutItem.target = self
+        submenu.addItem(saveLayoutItem)
+
+        let restoreLayoutItem = NSMenuItem(
+            title: "恢复保存的布局",
+            action: #selector(restoreCurrentLayout),
+            keyEquivalent: ""
+        )
+        restoreLayoutItem.target = self
+        restoreLayoutItem.isEnabled =
+            manager.currentWorkspaceHasLayoutSnapshot
+        submenu.addItem(restoreLayoutItem)
+
+        submenu.addItem(.separator())
+
         let deleteItem = NSMenuItem(
             title: "删除当前工作区…",
             action: #selector(deleteCurrentWorkspace),
@@ -172,6 +257,16 @@ final class StatusBarController: NSObject {
         submenu.addItem(deleteItem)
 
         workspaceItem.submenu = submenu
+    }
+
+    @objc
+    private func toggleWorkspacePanel() {
+        DispatchQueue.main.async { [weak self] in
+            guard let self else { return }
+            self.workspacePanelController?.toggle(
+                relativeTo: self.statusItem.button
+            )
+        }
     }
 
     @objc
@@ -207,6 +302,24 @@ final class StatusBarController: NSObject {
             self.manager.renameCurrentWorkspace()
             self.refreshMenuState()
         }
+    }
+
+    @objc
+    private func toggleCurrentLayoutLock() {
+        manager.toggleCurrentWorkspaceLayoutLock()
+        refreshMenuState()
+    }
+
+    @objc
+    private func saveCurrentLayout() {
+        manager.saveCurrentWorkspaceLayoutSnapshot()
+        refreshMenuState()
+    }
+
+    @objc
+    private func restoreCurrentLayout() {
+        manager.restoreCurrentWorkspaceLayoutSnapshot()
+        refreshMenuState()
     }
 
     @objc
@@ -257,6 +370,22 @@ final class StatusBarController: NSObject {
     @objc
     private func openStorageFolder() {
         manager.openStorageFolder()
+    }
+
+    @objc
+    private func undoLastFileMove() {
+        manager.undoLastFileMove()
+        refreshMenuState()
+    }
+
+    @objc
+    private func openSettings() {
+        settingsPanelController?.show(section: .general)
+    }
+
+    @objc
+    private func openAbout() {
+        settingsPanelController?.show(section: .about)
     }
 
     @objc
