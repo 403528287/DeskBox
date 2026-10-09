@@ -94,7 +94,7 @@ DeskBox 当前是免费开源练习项目，没有购买 Apple Developer Program
 ## 从源码构建
 
 ```bash
-git clone <repository-url>
+git clone https://github.com/403528287/DeskBox.git
 cd DeskBox
 open DeskBox.xcodeproj
 ```
