@@ -35,6 +35,14 @@
   <a href="https://github.com/403528287/DeskBox/releases/tag/v0.1.1">查看 Release</a>
 </p>
 
+<p align="center">
+  <img src="docs/assets/deskbox-file-drag.gif" width="900" alt="DeskBox 文件拖拽演示">
+</p>
+
+<p align="center">
+  <sub>把文件直接拖入 DeskBox 分区，真实收纳，不创建副本 · <a href="docs/assets/deskbox-file-drag.mp4">MP4 演示</a></sub>
+</p>
+
 ---
 
 ## DeskBox 是什么？
