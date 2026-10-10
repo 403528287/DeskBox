@@ -68,6 +68,37 @@ DeskBox 是一个原生 macOS 桌面整理工具。
 | 🍎 原生体验 | 菜单栏常驻、Quick Look、原生文件图标、玻璃界面 |
 | 💻 Universal | 同一个安装包支持 Apple Silicon 和 Intel Mac |
 
+## 更多演示
+
+<table>
+  <tr>
+    <td width="50%" align="center">
+      <strong>🖥️ 一键切换工作区</strong><br>
+      <sub>不同桌面场景之间整组切换，不移动真实文件</sub>
+    </td>
+    <td width="50%" align="center">
+      <strong>🧩 便签 · 待办 · 快捷入口</strong><br>
+      <sub>把今天真正要看的东西留在桌面上</sub>
+    </td>
+  </tr>
+  <tr>
+    <td align="center">
+      <img src="docs/assets/deskbox-workspace-switch.gif" width="430" alt="DeskBox 工作区切换演示">
+    </td>
+    <td align="center">
+      <img src="docs/assets/deskbox-widgets.gif" width="430" alt="DeskBox 桌面组件演示">
+    </td>
+  </tr>
+  <tr>
+    <td align="center">
+      <sub><a href="docs/assets/deskbox-workspace-switch.mp4">查看 MP4</a></sub>
+    </td>
+    <td align="center">
+      <sub><a href="docs/assets/deskbox-widgets.mp4">查看 MP4</a></sub>
+    </td>
+  </tr>
+</table>
+
 > **当前版本：0.1.1**
 >
 > DeskBox 仍处于早期开发阶段，欢迎试用、Star、提交 Issue 和 Pull Request。
