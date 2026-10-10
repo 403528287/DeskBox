@@ -63,6 +63,18 @@ final class DeskBoxSettingsStore: ObservableObject {
         return "版本 \(version)（\(build)）"
     }
 
+    var appIcon: NSImage {
+        if let iconURL = Bundle.main.url(
+            forResource: "AppIcon",
+            withExtension: "icns"
+        ),
+        let icon = NSImage(contentsOf: iconURL) {
+            return icon
+        }
+
+        return NSApplication.shared.applicationIconImage
+    }
+
     func setShowWorkspaceAtLaunch(_ enabled: Bool) {
         showWorkspaceAtLaunch = enabled
         DeskBoxPreferences.showWorkspaceAtLaunch = enabled
@@ -354,12 +366,6 @@ struct DeskBoxSettingsView: View {
             )
             .allowsHitTesting(false)
         }
-        .shadow(
-            color: Color.black.opacity(0.18),
-            radius: 30,
-            x: 0,
-            y: 16
-        )
     }
 
     private var header: some View {
@@ -895,7 +901,7 @@ struct DeskBoxSettingsView: View {
         VStack(spacing: 18) {
             Spacer()
 
-            Image(nsImage: NSApplication.shared.applicationIconImage)
+            Image(nsImage: store.appIcon)
                 .resizable()
                 .interpolation(.high)
                 .frame(width: 92, height: 92)

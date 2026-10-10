@@ -2,7 +2,14 @@
 
 All notable changes to DeskBox will be documented here.
 
-## [0.1.0] - Unreleased
+## [0.1.1] - 2026-10-10
+
+### Fixed
+
+- About page now loads the bundled DeskBox icon instead of the macOS placeholder icon
+- Removed clipped square shadow artifacts from the bottom corners of the Settings panel
+
+## [0.1.0] - 2026-10-09
 
 ### Added
 

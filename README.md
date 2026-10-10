@@ -4,7 +4,7 @@ DeskBox 是一个原生 macOS 桌面整理工具，用 Swift / SwiftUI / AppKit 
 
 它把桌面上的文件分区、便签、待办清单、快捷入口和工作区组织在一起，目标是做一个轻量、透明、可自由组合的桌面工作空间。
 
-> 当前版本：**0.1.0**
+> 当前版本：**0.1.1**
 >
 > DeskBox 仍处于早期开发阶段，欢迎试用、提交 Issue 和 Pull Request。
 
@@ -73,8 +73,8 @@ DeskBox 不会在重名时覆盖文件，而会生成类似 `文件 2.ext`、`�
 
 未来发布版本会放在 GitHub Releases 中，并提供：
 
-- `DeskBox-v0.1.0-macOS-universal.zip`
-- `DeskBox-v0.1.0-macOS-universal.dmg`
+- `DeskBox-v0.1.1-macOS-universal.zip`
+- `DeskBox-v0.1.1-macOS-universal.dmg`
 
 DeskBox 当前是免费开源练习项目，没有购买 Apple Developer Program，因此 Release 使用 **ad-hoc 签名**，没有 Apple Developer ID 公证。
 
